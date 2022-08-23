@@ -21,6 +21,7 @@ import (
 
 	"github.com/matrix-org/dendrite/internal"
 	"github.com/matrix-org/dendrite/internal/sqlutil"
+	"github.com/matrix-org/dendrite/roomserver/storage/postgres/deltas"
 	"github.com/matrix-org/dendrite/roomserver/storage/tables"
 	"github.com/matrix-org/dendrite/roomserver/types"
 )
@@ -38,7 +39,9 @@ CREATE TABLE IF NOT EXISTS roomserver_event_json (
     -- Not stored as JSON because we already validate the JSON in the server
     -- so there is no point in postgres validating it.
     -- TODO: Should we be compressing the events with Snappy or DEFLATE?
-    event_json TEXT NOT NULL
+    event_json TEXT NOT NULL,
+    -- Referential integrity
+    FOREIGN KEY (event_nid) REFERENCES roomserver_events(event_nid) ON DELETE CASCADE
 );
 `
 
@@ -61,7 +64,15 @@ type eventJSONStatements struct {
 
 func CreateEventJSONTable(db *sql.DB) error {
 	_, err := db.Exec(eventJSONSchema)
-	return err
+	if err != nil {
+		return err
+	}
+	m := sqlutil.NewMigrator(db)
+	m.AddMigrations(sqlutil.Migration{
+		Version: "roomserver: add event JSON foreign key",
+		Up:      deltas.UpAddEventJSONFK,
+	})
+	return m.Up(context.Background())
 }
 
 func PrepareEventJSONTable(db *sql.DB) (tables.EventJSON, error) {

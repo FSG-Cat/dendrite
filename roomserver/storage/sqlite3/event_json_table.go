@@ -29,7 +29,9 @@ import (
 const eventJSONSchema = `
   CREATE TABLE IF NOT EXISTS roomserver_event_json (
     event_nid INTEGER NOT NULL PRIMARY KEY,
-    event_json TEXT NOT NULL
+    event_json TEXT NOT NULL,
+	-- Referential integrity
+    FOREIGN KEY (event_nid) REFERENCES roomserver_events(event_nid) ON DELETE CASCADE
   );
 `
 

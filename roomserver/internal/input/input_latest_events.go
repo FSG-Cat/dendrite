@@ -142,11 +142,13 @@ func (u *latestEventsUpdater) doUpdateLatestEvents() error {
 
 	// If the event has already been written to the output log then we
 	// don't need to do anything, as we've handled it already.
-	if hasBeenSent, err := u.updater.HasEventBeenSent(u.stateAtEvent.EventNID); err != nil {
-		return fmt.Errorf("u.updater.HasEventBeenSent: %w", err)
-	} else if hasBeenSent {
-		return nil
-	}
+	/*
+		if hasBeenSent, err := u.updater.HasEventBeenSent(u.stateAtEvent.EventNID); err != nil {
+			return fmt.Errorf("u.updater.HasEventBeenSent: %w", err)
+		} else if hasBeenSent {
+			return nil
+		}
+	*/
 
 	// Work out what the latest events are. This will include the new
 	// event if it is not already referenced.

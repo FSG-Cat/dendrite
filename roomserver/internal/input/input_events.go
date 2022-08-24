@@ -371,7 +371,6 @@ func (r *Inputer) processRoomEvent(
 		return nil
 	}
 
-	logger.Debug("Accepted event")
 	switch input.Kind {
 	case api.KindNew:
 		if err = r.updateLatestEvents(

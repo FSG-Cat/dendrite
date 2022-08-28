@@ -225,7 +225,14 @@ func (r *FederationInternalAPI) performJoinUsingServer(
 
 	// Sanity-check the join response to ensure that it has a create
 	// event, that the room version is known, etc.
-	authEvents := respSendJoin.AuthEvents.UntrustedEvents(respMakeJoin.RoomVersion)
+	authEvents := make([]*gomatrixserverlib.Event, 0, len(respSendJoin.AuthEvents))
+	for _, event := range respSendJoin.AuthEvents {
+		authEvent, err := event.UntrustedEvent(respMakeJoin.RoomVersion)
+		if err != nil {
+			return fmt.Errorf("event.UntrustedEvent: %w", err)
+		}
+		authEvents = append(authEvents, authEvent)
+	}
 	if err = sanityCheckAuthChain(authEvents); err != nil {
 		return fmt.Errorf("sanityCheckAuthChain: %w", err)
 	}

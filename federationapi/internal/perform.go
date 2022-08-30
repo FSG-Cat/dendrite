@@ -227,6 +227,8 @@ func (r *FederationInternalAPI) performJoinUsingServer(
 	// event, that the room version is known, etc.
 	authEvents := make([]*gomatrixserverlib.Event, 0, len(respSendJoin.AuthEvents))
 	for _, event := range respSendJoin.AuthEvents {
+		fmt.Println("\n", string(event))
+
 		authEvent, err := event.UntrustedEvent(respMakeJoin.RoomVersion)
 		if err != nil {
 			return fmt.Errorf("event.UntrustedEvent: %w", err)
